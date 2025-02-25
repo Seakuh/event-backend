@@ -18,7 +18,7 @@ async function bootstrap() {
       'https://www.retromountainphangan.com',
       'https://avanti-kollektiv.de',
       'https://www.event-scanner.com',
-      'https://api.event-scanner.com',  // Diese Domain hinzufügen
+      'https://api.event-scanner.com', 
       '*'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
