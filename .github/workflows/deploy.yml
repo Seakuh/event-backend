@@ -36,7 +36,7 @@ jobs:
         run: |
           ssh root@37.27.41.23 "
             # Navigate to correct directory
-            cd /root/retvent/backend
+            cd /root/event-backend
             
             # Fetch latest changes and reset to master
             git fetch origin master
