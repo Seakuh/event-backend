@@ -18,13 +18,6 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install Dependencies
-        run: npm install
-        working-directory: backend
-      - name: Build Backend
-        run: npm run build
-        working-directory: backend
-
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
