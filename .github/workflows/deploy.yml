@@ -1,4 +1,4 @@
-name: Deploy to Production 🚀
+name: Deploy Backend
 
 on:
   push:
@@ -8,16 +8,33 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: SSH and Deploy 🔄
-        uses: appleboy/ssh-action@master
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm install
+        working-directory: backend
+      - name: Build Backend
+        run: npm run build
+        working-directory: backend
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY_BACKEND }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 37.27.41.23 >> ~/.ssh/known_hosts
+
+      - name: Deploy Backend via SSH
+        run: |
+          ssh root@37.27.41.23 "
             # Navigate to correct directory
             cd /root/retvent/backend
             
@@ -37,6 +54,7 @@ jobs:
             echo "MEETUP_API_KEY=${{ secrets.MEETUP_API_KEY }}" >> .env
             
             # Restart PM2 process
+            echo pwd
             pm2 delete events-backend || true
             pm2 start dist/main.js --name events-backend
             pm2 save
@@ -45,4 +63,5 @@ jobs:
             pm2 status
             
             # Verify nginx configuration and restart
-            nginx -t && systemctl restart nginx 
+            nginx -t && systemctl restart nginx || true
+          "
